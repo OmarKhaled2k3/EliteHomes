@@ -11,7 +11,22 @@ const app  = express();
 const PORT = process.env.PORT || 5000;
 
 // ── Middleware ─────────────────────────────────────────────
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+const corsOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'https://omarkhaled2k3.github.io'
+];
+
+app.use(cors({ 
+  origin: (origin, callback) => {
+    if (!origin || corsOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true 
+}));
 app.use(express.json());
 
 // ── Routes ─────────────────────────────────────────────────

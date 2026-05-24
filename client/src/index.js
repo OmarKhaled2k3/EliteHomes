@@ -10,7 +10,7 @@ import './index.css';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <BrowserRouter basename="/Elite-Homes---Fullstack---Web-Project">
+    <BrowserRouter basename="/EliteHomes">
       <App />
     </BrowserRouter>
   </React.StrictMode>

@@ -1,9 +1,21 @@
 const express     = require('express');
 const router      = express.Router();
 const TourRequest = require('../models/TourRequest');
+const { verifyToken, isAdmin } = require('../middleware/auth');
+const rateLimit = require('express-rate-limit');
+
+// Strict form submission rate limiter: max 5 requests per 15 minutes per IP
+const submissionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    success: false,
+    message: 'Too many tour request submissions. Please try again after 15 minutes.'
+  }
+});
 
 // POST /api/tours
-router.post('/', async (req, res) => {
+router.post('/', submissionLimiter, async (req, res) => {
   try {
     const { propertyId, propertyTitle, name, email, phone, preferredDate, message } = req.body;
 
@@ -25,7 +37,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/tours
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, isAdmin, async (req, res) => {
   try {
     const tours = await TourRequest.find().sort({ createdAt: -1 });
     res.json({ success: true, data: tours });

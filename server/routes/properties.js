@@ -1,6 +1,7 @@
 const express  = require('express');
 const router   = express.Router();
 const Property = require('../models/Property');
+const { verifyToken, isAdmin } = require('../middleware/auth');
 
 // GET /api/properties  — with optional filters
 router.get('/', async (req, res) => {
@@ -42,7 +43,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/properties  — add a property (admin / seed)
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, isAdmin, async (req, res) => {
   try {
     const property = new Property(req.body);
     await property.save();

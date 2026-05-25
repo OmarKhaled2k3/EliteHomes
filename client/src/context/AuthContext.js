@@ -92,7 +92,8 @@ export function AuthProvider({ children }) {
     loading,
     login,
     logout,
-    authFetch
+    authFetch,
+    setUser
   };
 
   return (

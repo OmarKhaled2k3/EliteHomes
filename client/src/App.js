@@ -12,6 +12,7 @@ import Contact        from './pages/Contact';
 import PropertyDetail from './pages/PropertyDetail';
 import Login          from './pages/Login';
 import SignUp         from './pages/SignUp';
+import Wishlist       from './pages/Wishlist';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -27,6 +28,14 @@ function App() {
           <Route path="/contact"            element={<Contact />} />
           <Route path="/login"              element={<Login />} />
           <Route path="/signup"             element={<SignUp />} />
+          <Route 
+            path="/wishlist"             
+            element={
+              <ProtectedRoute>
+                <Wishlist />
+              </ProtectedRoute>
+            } 
+          />
           <Route 
             path="/admin"             
             element={

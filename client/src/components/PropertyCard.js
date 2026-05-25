@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TourModal from './TourModal';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import API_BASE_URL from '../config';
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80';
 
@@ -12,8 +15,39 @@ const STATUS_CLASSES = {
 
 export default function PropertyCard({ property }) {
   const [showTour, setShowTour] = useState(false);
-  const [liked,    setLiked]    = useState(false);
+  const { user, setUser, authFetch } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
+
+  // Check if this property is wishlisted by the active user
+  const isWishlisted = user && user.wishlist && user.wishlist.includes(property._id);
+
+  async function handleWishlistToggle(e) {
+    e.stopPropagation(); // Stop navigation to detail page
+    if (!user) {
+      showToast('Please log in to add properties to your wishlist.', 'error');
+      return;
+    }
+
+    try {
+      const res = await authFetch(`${API_BASE_URL}/auth/wishlist/${property._id}`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUser(prev => ({ ...prev, wishlist: data.wishlist }));
+        showToast(
+          isWishlisted ? 'Removed from wishlist' : 'Added to wishlist!',
+          'success'
+        );
+      } else {
+        showToast(data.message || 'Error updating wishlist.', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Connection error. Please try again.', 'error');
+    }
+  }
 
   function goToDetail(e) {
     // Don't navigate if heart or Schedule Tour button was clicked
@@ -38,11 +72,11 @@ export default function PropertyCard({ property }) {
           </span>
           <span
             className="badge rounded-pill tr-badge bg-body-tertiary"
-            onClick={() => setLiked(!liked)}
+            onClick={handleWishlistToggle}
             style={{ cursor: 'pointer' }}
-            title={liked ? 'Unlike' : 'Like'}
+            title={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
           >
-            <i className={`fa-${liked ? 'solid' : 'regular'} fa-heart`} style={{ color: liked ? 'red' : undefined }}></i>
+            <i className={`fa-${isWishlisted ? 'solid' : 'regular'} fa-heart`} style={{ color: isWishlisted ? 'red' : undefined }}></i>
           </span>
         </div>
 

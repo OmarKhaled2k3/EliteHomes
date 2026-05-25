@@ -59,6 +59,18 @@ export default function Navbar() {
               </NavLink>
             </li>
 
+            {/* Wishlist Link */}
+            {user && (
+              <li className="nav-item">
+                <NavLink
+                  className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+                  to="/wishlist"
+                >
+                  Wishlist
+                </NavLink>
+              </li>
+            )}
+
             {/* Admin Dashboard */}
             {user && user.role === 'admin' && (
               <li className="nav-item">

@@ -69,7 +69,8 @@ router.post('/login', async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        wishlist: user.wishlist || []
       }
     });
   } catch (err) {
@@ -89,6 +90,39 @@ router.get('/me', verifyToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server error.' });
+  }
+});
+
+// POST /api/auth/wishlist/:propertyId — Toggle wishlist item
+router.post('/wishlist/:propertyId', verifyToken, async (req, res) => {
+  try {
+    const { propertyId } = req.params;
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
+
+    const index = user.wishlist.indexOf(propertyId);
+    if (index === -1) {
+      user.wishlist.push(propertyId);
+    } else {
+      user.wishlist.splice(index, 1);
+    }
+    await user.save();
+    res.json({ success: true, wishlist: user.wishlist });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error toggling wishlist.' });
+  }
+});
+
+// GET /api/auth/wishlist — Get populated wishlist properties
+router.get('/wishlist', verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('wishlist');
+    if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
+    res.json({ success: true, data: user.wishlist });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server error retrieving wishlist.' });
   }
 });
 

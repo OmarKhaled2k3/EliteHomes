@@ -147,9 +147,6 @@ export default function Login() {
                   <p className="small text-muted mb-2">
                     Don't have an account? <Link to="/signup" className="text-purple fw-bold text-decoration-none" style={{ color: 'var(--main-color)' }}>Sign Up</Link>
                   </p>
-                  <span className="text-muted small d-block">
-                    Default Dev Admin: <code>admin@elitehomes.com</code> / <code>admin12345</code>
-                  </span>
                 </div>
               </div>
             </div>
